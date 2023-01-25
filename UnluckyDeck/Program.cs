@@ -19,21 +19,57 @@ namespace UnluckyDeck
 			Hand hand = new Hand();
 			Card card = new Card();
 
-			Console.WriteLine("Чтобы взять карту нажмите пробел, " +
-			"нажмите любую другую клавишу, чтобы перестать доставать карты из колоды");
+			deck.Show();
+			//Console.WriteLine("Чтобы взять карту нажмите пробел, " +
+			//"нажмите любую другую клавишу, чтобы перестать доставать карты из колоды и увидеть все карты в руке");
 
-			while (Console.ReadKey().Key == ConsoleKey.Spacebar)
-			{
-				hand.Fill();
-			}
+			//while (Console.ReadKey().Key == ConsoleKey.Spacebar)
+			//{
+			//	hand.Fill();
+			//}
 
-			hand.ShowCards();
+			//Console.WriteLine($"Карты в вашей руке:");
+			//hand.ShowCards();
+
+			Console.ReadKey();
 		}
 
 		public class Deck
 		{
 			public List<string> _suits { get; private set; } = new List<string>() { "Черви", "Пики", "Крести", "Буби" };
 			public List<string> _values { get; private set; } = new List<string>() { "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
+			public List<string[]> _cards { get; private set; } = new List<string[]>();
+
+			private string[] _card = new string[2];
+
+			private void GetNew()
+			{
+				for(int i = 0; i < _values.Count; i++)
+				{
+
+					_card[0] = _values[i];
+					for (int j = 0; j < _suits.Count; j++)
+					{
+						_card[1] = _suits[j];
+						_cards.Add(_card);
+						//Console.WriteLine($"{_card[0]}:{_card[1]}");
+						//Console.WriteLine($"{_cards[i][0]}");
+						//Console.WriteLine($"{_cards[i][1]}");
+					}
+				}
+			}
+
+			public void Show()
+			{
+				GetNew();
+				for (int i = 0; i < _cards.Count; i++)
+				{
+					for (int j = 0; j < _card.Length; j++)
+					{
+						Console.WriteLine($"{_cards[i][j]}");
+					}
+				}
+			}
 		}
 
 		public class Card
@@ -55,13 +91,6 @@ namespace UnluckyDeck
 			{
 				Card card = new Card();
 
-				Random random = new Random();
-
-				int randomNumberValues = random.Next(0, deck._values.Count-1);
-				int randomNumberSuits = random.Next(0, deck._suits.Count-1);
-
-				card._value = deck._values[randomNumberValues];
-				card._suit = deck._suits[randomNumberSuits];
 
 				card.Show();
 				return card;
@@ -73,39 +102,17 @@ namespace UnluckyDeck
 			List<Card> _cards = new List<Card>();
 			Deck deck = new Deck();
 
-			private Card GetNotDuplicatedCard(Card card) // КАРТЫ ВСЁ РАВНО БЕРУТСЯ ДАЛЬШЕ НАДО СДЕЛАТЬ ОТДЕЛЬНЫЙ МЕТОД НА ВЗЯТЬ КАРТУ И НА ПОЛОЖИТЬ КАРТУ В РУКУ
-			{
-				bool isDuplicated = true;
-
-				if(_cards.Count == 0)
-				{
-					isDuplicated = false;
-				}
-
-				while (isDuplicated == true)
-				{
-					foreach (Card cardInHand in _cards)
-					{
-						if (cardInHand._value == card._value & cardInHand._suit == card._suit)
-						{
-							card = TakeCard(deck);
-							Console.WriteLine("ДУБЛЬ");
-							break;
-						}
-						else
-						{
-							isDuplicated = false;
-						}
-					}
-				}
-
-				return card;
-			}
-
 			public void Fill()
 			{
-				Card _card = TakeCard(deck);
-				_cards.Add(GetNotDuplicatedCard(_card));
+				if(_cards.Count > 35)
+				{
+					Console.WriteLine("В колоде кончились карты");
+				}
+				else
+				{
+					Card _card = TakeCard(deck);
+					_cards.Add(_card);
+				}
 			}
 
 			public void ShowCards()
@@ -114,6 +121,7 @@ namespace UnluckyDeck
 				{
 					card.Show();
 				}
+				Console.WriteLine($"V ruke{_cards.Count} kart");
 			}
 
 		}

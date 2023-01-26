@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
 using static UnluckyDeck.Program;
@@ -19,10 +20,14 @@ namespace UnluckyDeck
 			Hand hand = new Hand();
 			Card card = new Card();
 
-			deck.Show();
-			//Console.WriteLine("Чтобы взять карту нажмите пробел, " +
-			//"нажмите любую другую клавишу, чтобы перестать доставать карты из колоды и увидеть все карты в руке");
+			Console.WriteLine("Чтобы взять карту нажмите пробел, " +
+			"нажмите любую другую клавишу, чтобы перестать доставать карты из колоды и увидеть все карты в руке");
 
+			foreach (var item in deck.GetShuffledCards())
+			{
+				item.Show();
+			}
+			//Console.WriteLine(deck.GetShuffledCards());
 			//while (Console.ReadKey().Key == ConsoleKey.Spacebar)
 			//{
 			//	hand.Fill();
@@ -31,88 +36,93 @@ namespace UnluckyDeck
 			//Console.WriteLine($"Карты в вашей руке:");
 			//hand.ShowCards();
 
-			Console.ReadKey();
+			//Console.ReadKey();
 		}
 
 		public class Deck
 		{
-			public List<string> _suits { get; private set; } = new List<string>() { "Черви", "Пики", "Крести", "Буби" };
-			public List<string> _values { get; private set; } = new List<string>() { "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
-			public List<string[]> _cards { get; private set; } = new List<string[]>();
+			private string[] _suits;
+			private string[] _values;
+			private List<Card> _cards = new List<Card>();
 
-			private string[] _card = new string[2];
-
-			private void GetNew()
+			public Deck()
 			{
-				for(int i = 0; i < _values.Count; i++)
-				{
+				_suits = new string[] { "Черви", "Пики", "Крести", "Буби" };
+				_values = new string[] { "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
 
-					_card[0] = _values[i];
-					for (int j = 0; j < _suits.Count; j++)
+				for (int i = 0; i < _values.Length; i++)
+				{
+					for (int j = 0; j < _suits.Length; j++)
 					{
-						_card[1] = _suits[j];
-						_cards.Add(_card);
-						//Console.WriteLine($"{_card[0]}:{_card[1]}");
-						//Console.WriteLine($"{_cards[i][0]}");
-						//Console.WriteLine($"{_cards[i][1]}");
+						_cards.Add(new Card(_values[i], _suits[j]));
 					}
 				}
 			}
 
+			public List<Card> Shuffle()
+			{
+				Random random = new Random();
+
+				for (int n = _cards.Count - 1; n > 0; --n)
+				{
+					int k = random.Next(n+1);                           //NAMES!!!!!!
+					Card temp = _cards[n];
+					_cards[n] = _cards[k];
+					_cards[k] = temp;
+				}
+
+				return _cards;
+			}
 			public void Show()
 			{
-				GetNew();
-				for (int i = 0; i < _cards.Count; i++)
+				foreach(Card card in _cards)
 				{
-					for (int j = 0; j < _card.Length; j++)
-					{
-						Console.WriteLine($"{_cards[i][j]}");
-					}
-				}
+					card.Show();
+				}	
+			}
+
+			public List<Card> GetShuffledCards()
+			{
+				_cards = Shuffle();
+				return _cards;
 			}
 		}
 
 		public class Card
 		{
-			public string _suit;
+			public string Suit { get; private set; }
 
-			public string _value;
+			public string Value { get; private set; }
 
-			Card card;
+			public Card(string suit, string value)
+			{
+				Suit=suit;
+				Value=value;
+			}
+
+			public Card()
+			{
+			}
+
 			public void Show()
 			{
-				Console.WriteLine($"Достоинство карты: {_value}, Масть карты: {_suit}");
+				Console.WriteLine($"Достоинство карты: {Value}, Масть карты: {Suit}");
 			}
 		}
 
 		public class Player
 		{
-			public Card TakeCard(Deck deck)
-			{
-				Card card = new Card();
 
-
-				card.Show();
-				return card;
-			}
 		}
 
 		public class Hand : Player
 		{
-			List<Card> _cards = new List<Card>();
 			Deck deck = new Deck();
+			List<Card> _cards = new List<Card>();
 
 			public void Fill()
 			{
-				if(_cards.Count > 35)
-				{
-					Console.WriteLine("В колоде кончились карты");
-				}
-				else
-				{
-					Card _card = TakeCard(deck);
-					_cards.Add(_card);
-				}
+
 			}
 
 			public void ShowCards()

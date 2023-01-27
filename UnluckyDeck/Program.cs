@@ -14,29 +14,31 @@ namespace UnluckyDeck
 	{
 		static void Main(string[] args)
 		{
+			Card _card = new Card();
 			Deck deck = new Deck();
-
 			Player player = new Player();
-			Hand hand = new Hand();
-			Card card = new Card();
+			List<Card> cards = new List<Card>();
+			
 
 			Console.WriteLine("Чтобы взять карту нажмите пробел, " +
-			"нажмите любую другую клавишу, чтобы перестать доставать карты из колоды и увидеть все карты в руке");
+			"нажмите любую другую клавишу, чтобы перестать доставать " +
+			"карты из колоды и увидеть все карты в руке");
 
-			foreach (var item in deck.GetShuffledCards())
+			Console.WriteLine("Карты в колоде после расклада:");
+
+			deck.Shuffle();
+			deck.Show();
+
+			while (Console.ReadKey().Key == ConsoleKey.Spacebar)
 			{
-				item.Show();
+				_card = player.TakeCard();
+				player.AddCardInHand(_card);
+				deck.RemoveTakenCard(_card);
+				Console.WriteLine("Карты в руке у Игрока");
+				player.ShowCards();
+				Console.WriteLine("Карты в колоде");
+				deck.Show();
 			}
-			//Console.WriteLine(deck.GetShuffledCards());
-			//while (Console.ReadKey().Key == ConsoleKey.Spacebar)
-			//{
-			//	hand.Fill();
-			//}
-
-			//Console.WriteLine($"Карты в вашей руке:");
-			//hand.ShowCards();
-
-			//Console.ReadKey();
 		}
 
 		public class Deck
@@ -44,6 +46,8 @@ namespace UnluckyDeck
 			private string[] _suits;
 			private string[] _values;
 			private List<Card> _cards = new List<Card>();
+			private Card _card = new Card();
+
 
 			public Deck()
 			{
@@ -59,7 +63,7 @@ namespace UnluckyDeck
 				}
 			}
 
-			public List<Card> Shuffle()
+			public void Shuffle()
 			{
 				Random random = new Random();
 
@@ -70,9 +74,8 @@ namespace UnluckyDeck
 					_cards[n] = _cards[k];
 					_cards[k] = temp;
 				}
-
-				return _cards;
 			}
+
 			public void Show()
 			{
 				foreach(Card card in _cards)
@@ -81,10 +84,21 @@ namespace UnluckyDeck
 				}	
 			}
 
-			public List<Card> GetShuffledCards()
+			public List<Card> GetCards()
 			{
-				_cards = Shuffle();
 				return _cards;
+			}
+
+			public void RemoveTakenCard(Card _card)
+			{
+				for(int i = 0; i < _cards.Count; i++)
+				{
+					if (_cards[i].Value==_card.Value & _cards[i].Suit==_card.Suit)
+					{
+						_cards.Remove(_cards[i]);
+					}
+				}
+				 
 			}
 		}
 
@@ -112,28 +126,33 @@ namespace UnluckyDeck
 
 		public class Player
 		{
-
-		}
-
-		public class Hand : Player
-		{
+			private Card _card = new Card();
 			Deck deck = new Deck();
 			List<Card> _cards = new List<Card>();
+			List<Card> _cardsInHand = new List<Card>();
 
-			public void Fill()
+			
+			public Card TakeCard()
 			{
+				_card = _cards[_cards.Count-1];
+				return _card;
+			}
 
+			public void AddCardInHand(Card _card)
+			{
+				_cardsInHand.Add(_card);
 			}
 
 			public void ShowCards()
 			{
-				foreach (var card in _cards)
+
+				foreach (var card in _cardsInHand)
 				{
 					card.Show();
 				}
-				Console.WriteLine($"V ruke{_cards.Count} kart");
+				Console.WriteLine($"V ruke{_cardsInHand.Count} kart" +
+					$"V kolode {_cards.Count}");
 			}
-
 		}
 	}
 }

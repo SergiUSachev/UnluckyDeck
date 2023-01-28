@@ -118,7 +118,6 @@ namespace UnluckyDeck
 		public class Player
 		{
 			private Card _card = new Card();
-			private Deck deck = new Deck();
 
 			List<Card> _cards = new List<Card>();
 			List<Card> _cardsInHand = new List<Card>();
